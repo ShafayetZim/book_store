@@ -6,7 +6,7 @@ from .serializers import BookSerializer
 
 def book_list(request):
     books = Book.objects.all()
-    return render(request, 'books/book_list.html', {'books': books})
+    return render(request, 'book_list.html', {'books': books})
 
 def add_book(request):
     if request.method == 'POST':
@@ -15,7 +15,7 @@ def add_book(request):
         price = request.POST['price']
         Book.objects.create(title=title, author=author, price=price)
         return redirect('book_list')
-    return render(request, 'books/add_book.html')
+    return render(request, 'add_book.html')
 
 @api_view(['GET'])
 def api_book_list(request):
