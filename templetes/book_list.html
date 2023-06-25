@@ -2,7 +2,7 @@
 <html>
 <head>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
-    <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
     <title>Bookstore</title>
@@ -10,7 +10,6 @@
         body {
           padding-top: 80px;
         }
-
         .show-cart li {
           display: flex;
         }
@@ -22,10 +21,18 @@
           height: 200px;
           align-self: center;
         }
+        .center-button {
+          display: block;
+          margin: 0 auto;
+        }
     </style>
 </head>
 <body>
     <h1 class="text-center">Available Books</h1>
+    <a href="{% url 'add_book' %}">
+      <button type="button" class="btn btn-success center-button">Add Book</button>
+    </a><br />
+
 
     <!-- Nav -->
     <nav class="navbar navbar-inverse bg-inverse fixed-top bg-faded">
@@ -42,7 +49,6 @@
             {% for book in books %}
           <div class="col">
             <div class="card" style="width: 20rem;">
-<!--              <img class="card-img-top" src="http://www.azspagirls.com/files/2010/09/orange.jpg" alt="Card image cap">-->
               <div class="card-block">
                 <h4 class="card-title">{{ book.title }}</h4>
                 <p class="card-text"> {{ book.author }}</p>
@@ -75,7 +81,7 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-primary">Order now</button>
+            <button id="order-btn" type="button" class="btn btn-primary">Order now</button>
           </div>
         </div>
       </div>
@@ -290,6 +296,44 @@
         });
 
         displayCart();
+
+
+        // Order now button click event
+          $('#order-btn').click(function() {
+            var name = prompt('Enter your name:');
+            var address = prompt('Enter your address:');
+
+            if (name && address) {
+              var items = JSON.stringify(shoppingCart.listCart());
+
+              // Send the order data to the server
+              $.ajax({
+                url: '{% url "process_order" %}',
+                method: 'POST',
+                dataType: 'json',
+                data: {
+                  name: name,
+                  address: address,
+                  items: items,
+                  csrfmiddlewaretoken: '{{ csrf_token }}' // Add CSRF token for Django's protection
+                },
+                success: function(response) {
+                  if (response.success) {
+                    alert('Order placed successfully!');
+                    shoppingCart.clearCart();
+                    displayCart();
+                  } else {
+                    alert('Error: ' + response.error);
+                  }
+                },
+                error: function(xhr, status, error) {
+                  alert('Error: ' + error);
+                }
+              });
+            } else {
+              alert('Please enter your name and address.');
+            }
+          });
 
     </script>
 

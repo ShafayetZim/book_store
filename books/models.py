@@ -11,3 +11,10 @@ class Book(models.Model):
 class Cart(models.Model):
     books = models.ManyToManyField(Book)
 
+class Order(models.Model):
+    items = models.TextField()
+    name = models.CharField(max_length=100)
+    address = models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.name
