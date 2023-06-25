@@ -36,7 +36,7 @@ Windows: python -m venv environment_name
 That's it! You now have a Bookstore application. <br />
 Remember to run the server using python manage.py runserver and access the application at http://localhost:8000. <br />
 The API endpoints will be available at http://localhost:8000/books/api/books/ , http://localhost:8000/books/api/add_book/, <br />
-path('api/orders/', views.api_order_list, name='api_order_list') & path('api/add_order/', views.api_add_order, name='api_add_order').
+http://localhost:8000/api/orders/ & http://localhost:8000/api/add_order/.
 
 Existing Superuser:
 id: admin
